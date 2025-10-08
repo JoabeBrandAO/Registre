@@ -1,1 +1,148 @@
- 
+ name: 'CI Pipeline'
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Job 1: Análise de código e testes
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        component: [frontend, backend]
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js (Frontend)
+      if: matrix.component == 'frontend'
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: src/frontend/package-lock.json
+        
+    - name: Setup Python (Backend)
+      if: matrix.component == 'backend'
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+        
+    - name: Install dependencies (Frontend)
+      if: matrix.component == 'frontend'
+      working-directory: ./src/frontend
+      run: npm ci
+      
+    - name: Install dependencies (Backend)
+      if: matrix.component == 'backend'
+      working-directory: ./src/backend
+      run: |
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+        
+    - name: Lint Frontend
+      if: matrix.component == 'frontend'
+      working-directory: ./src/frontend
+      run: |
+        npm run lint
+        npm run format:check
+        
+    - name: Lint Backend
+      if: matrix.component == 'backend'
+      working-directory: ./src/backend
+      run: |
+        flake8 .
+        black --check .
+        isort --check-only .
+        
+    - name: Test Frontend
+      if: matrix.component == 'frontend'
+      working-directory: ./src/frontend
+      run: npm run test:coverage
+      
+    - name: Test Backend
+      if: matrix.component == 'backend'
+      working-directory: ./src/backend
+      run: |
+        pytest tests/ --cov=. --cov-report=xml --cov-report=term
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage.xml
+        flags: ${{ matrix.component }}
+
+  # Job 2: Análise de Segurança (SAST)
+  security:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # Job 3: Build das imagens Docker
+  build:
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Build and test Docker images
+      run: |
+        docker-compose -f docker-compose.yml build
+        docker-compose -f docker-compose.yml run --rm app python -m pytest
+
+  # Job para métricas DevOps
+  metrics:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: pip install requests
+      
+    - name: Collect DORA metrics
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+        GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
+      run: python scripts/collect_metrics.py
+      
+    - name: Upload metrics artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: dora-metrics
+        path: dora_metrics.json

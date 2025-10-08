@@ -1,0 +1,107 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "DORA Metrics - Registre",
+    "tags": ["devops", "dora"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Deployment Frequency",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "increase(deployments_total[7d])",
+            "legendFormat": "Deployments per week"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 1},
+                {"color": "green", "value": 7}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Lead Time for Changes",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(lead_time_hours)",
+            "legendFormat": "Average Lead Time"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "h",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 24},
+                {"color": "red", "value": 168}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Change Failure Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "failure_rate_percentage",
+            "legendFormat": "Failure Rate"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 15},
+                {"color": "red", "value": 30}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Mean Time to Recovery",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(mttr_hours)",
+            "legendFormat": "MTTR"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "h",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 1},
+                {"color": "red", "value": 24}
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "time": {
+      "from": "now-30d",
+      "to": "now"
+    },
+    "refresh": "5m"
+  }
+}

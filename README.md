@@ -134,3 +134,49 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 ⭐ **If this project was useful to you, consider giving it a star on GitHub!**
+
+"
+## 📊 Métricas DevOps
+
+O projeto Registre monitora continuamente as seguintes métricas DORA:
+
+### Métricas Atuais
+
+- **Deployment Frequency**: ![Deployment Badge](https://img.shields.io/github/deployments/your-org/registre/production)
+- **Lead Time for Changes**: <1 dia (target: Elite performer)
+- **Change Failure Rate**: <15% (target: Elite performer) 
+- **Mean Time to Recovery**: <1 hora (target: Elite performer)
+
+### Dashboards
+
+- [Grafana Dashboard](http://localhost:3001) - Métricas em tempo real
+- [Prometheus](http://localhost:9090) - Coleta de métricas
+- [GitHub Actions](https://github.com/your-org/registre/actions) - Pipeline status
+
+### Comandos de Monitoramento
+
+Verificar status dos serviços
+
+docker-compose ps
+Ver logs em tempo real
+
+docker-compose logs -f
+Executar testes com coverage
+
+npm run test:coverage
+pytest --cov=. --cov-report=html
+Coletar métricas DORA
+
+python scripts/collect_metrics.py
+
+
+## Metas de Performance (Próximos 3 meses)
+
+| Métrica | Atual | Meta | Status |
+|---------|-------|------|--------|
+| Test Coverage | 65% | >85% | 🟡 |
+| Deployment Freq | 2/semana | 1/dia | 🟡 |
+| Lead Time | 3 dias | <1 dia | 🟡 |
+| MTTR | 2 horas | <1 hora | 🟢 |
+
+"

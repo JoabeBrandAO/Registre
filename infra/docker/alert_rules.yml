@@ -1,0 +1,38 @@
+groups:
+- name: registre.rules
+  rules:
+  - alert: HighErrorRate
+    expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Alta taxa de erro na aplicação"
+      description: "Taxa de erro > 10% por 5 minutos"
+
+  - alert: DatabaseDown
+    expr: up{job="postgres-exporter"} == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Base de dados indisponível"
+      description: "PostgreSQL está down"
+
+  - alert: LowTestCoverage
+    expr: test_coverage_percentage < 85
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Cobertura de testes baixa"
+      description: "Cobertura atual: {{ $value }}%"
+
+  - alert: SlowDeploymentFrequency
+    expr: deployments_per_day < 0.2
+    for: 1d
+    labels:
+      severity: warning
+    annotations:
+      summary: "Frequência de deploy baixa"
+      description: "Menos de 1 deploy por 5 dias"
