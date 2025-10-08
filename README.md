@@ -135,48 +135,51 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ⭐ **If this project was useful to you, consider giving it a star on GitHub!**
 
-"
-## 📊 Métricas DevOps
+# 📊 DevOps Metrics
 
-O projeto Registre monitora continuamente as seguintes métricas DORA:
+The Registre project continuously monitors the following DORA metrics:
 
-### Métricas Atuais
+## Current Metrics
 
 - **Deployment Frequency**: ![Deployment Badge](https://img.shields.io/github/deployments/your-org/registre/production)
-- **Lead Time for Changes**: <1 dia (target: Elite performer)
+- **Lead Time for Changes**: <1 day (target: Elite performer)
 - **Change Failure Rate**: <15% (target: Elite performer) 
-- **Mean Time to Recovery**: <1 hora (target: Elite performer)
+- **Mean Time to Recovery**: <1 hour (target: Elite performer)
 
-### Dashboards
+## Dashboards
 
-- [Grafana Dashboard](http://localhost:3001) - Métricas em tempo real
-- [Prometheus](http://localhost:9090) - Coleta de métricas
+- [Grafana Dashboard](http://localhost:3001) - Real-time metrics
+- [Prometheus](http://localhost:9090) - Metrics collection
 - [GitHub Actions](https://github.com/your-org/registre/actions) - Pipeline status
 
-### Comandos de Monitoramento
+## Monitoring Commands
 
-Verificar status dos serviços
-
+Check service status
+```bash
 docker-compose ps
-Ver logs em tempo real
+```
 
+View logs in real-time
+```bash
 docker-compose logs -f
-Executar testes com coverage
+```
 
+Run tests with coverage
+```bash
 npm run test:coverage
 pytest --cov=. --cov-report=html
-Coletar métricas DORA
+```
 
+Collect DORA metrics
+```bash
 python scripts/collect_metrics.py
+```
 
+## Performance Goals (Next 3 months)
 
-## Metas de Performance (Próximos 3 meses)
-
-| Métrica | Atual | Meta | Status |
-|---------|-------|------|--------|
+| Metric | Current | Target | Status |
+|---------|---------|--------|--------|
 | Test Coverage | 65% | >85% | 🟡 |
-| Deployment Freq | 2/semana | 1/dia | 🟡 |
-| Lead Time | 3 dias | <1 dia | 🟡 |
-| MTTR | 2 horas | <1 hora | 🟢 |
-
-"
+| Deployment Freq | 2/week | 1/day | 🟡 |
+| Lead Time | 3 days | <1 day | 🟡 |
+| MTTR | 2 hours | <1 hour | 🟢 |
